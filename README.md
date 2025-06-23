@@ -123,3 +123,8 @@ Once you've completed the installation and configuration steps, you can start th
 
 ```bash
 python main.py
+```
+
+### Career Orientation Quiz
+
+Run the bot and send the `/career` command in Telegram to start an orientation quiz based on the RIASEC model. Answer the questions and the bot will give you your dominant career category at the end.

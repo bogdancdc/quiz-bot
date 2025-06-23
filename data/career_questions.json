@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "text": "Which activity sounds the most appealing to you?",
+    "options": [
+      "Building or fixing things",
+      "Doing scientific research",
+      "Creating art or music",
+      "Helping or teaching people",
+      "Persuading or leading others",
+      "Organizing information"
+    ]
+  },
+  {
+    "id": 2,
+    "text": "What type of work environment do you prefer?",
+    "options": [
+      "Outdoors or hands-on settings",
+      "Laboratories or libraries",
+      "Studios or stages",
+      "Schools or community centers",
+      "Business offices or sales floors",
+      "Structured office settings"
+    ]
+  },
+  {
+    "id": 3,
+    "text": "Which subject did you enjoy most at school?",
+    "options": [
+      "Shop or mechanics",
+      "Math or science",
+      "Art or literature",
+      "Psychology or social studies",
+      "Economics or marketing",
+      "Accounting or computing"
+    ]
+  },
+  {
+    "id": 4,
+    "text": "Choose the project you would rather work on:",
+    "options": [
+      "Repairing equipment",
+      "Solving a complex problem",
+      "Designing a poster",
+      "Coaching a team",
+      "Pitching a new product",
+      "Managing records"
+    ]
+  },
+  {
+    "id": 5,
+    "text": "How would you spend a free afternoon?",
+    "options": [
+      "Building a DIY project",
+      "Reading about new discoveries",
+      "Practicing a creative hobby",
+      "Volunteering",
+      "Networking with new people",
+      "Organizing your workspace"
+    ]
+  },
+  {
+    "id": 6,
+    "text": "Which tool do you use the most?",
+    "options": [
+      "Power tools",
+      "Microscope or calculator",
+      "Paintbrush or instrument",
+      "Notebook for advice",
+      "Presentation software",
+      "Spreadsheet"
+    ]
+  }
+]
