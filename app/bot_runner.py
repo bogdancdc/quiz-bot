@@ -1,6 +1,7 @@
 # app/bot_runner.py
 from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CallbackContext, PicklePersistence, CommandHandler, ConversationHandler, MessageHandler, filters, CommandHandler, CallbackQueryHandler
+import json
 from .quiz_manager import QuizManager
 from .user_manager import UserManager
 from .report_manager import ReportManager
@@ -33,6 +34,19 @@ class QuizBot:
         self.persistence = PicklePersistence('quiz_bot_data.pkl')
         self.application = Application.builder().token(self.token).persistence(self.persistence).build()
         self.logger = logger
+        try:
+            with open("data/career_questions.json", "r", encoding="utf-8") as f:
+                self.career_questions = json.load(f)
+        except FileNotFoundError:
+            self.career_questions = []
+        self.career_descriptions = {
+            "Realistic": "Practical and hands-on occupations suit you best.",
+            "Investigative": "You enjoy analytical or scientific activities.",
+            "Artistic": "Creative expression is important in your work.",
+            "Social": "You prefer helping and teaching other people.",
+            "Enterprising": "You are motivated by leading and persuading.",
+            "Conventional": "Organized and detail oriented work appeals to you."
+        }
 
     def start_bot(self):
         self.application.add_handler(CommandHandler("start", self.command_start))
@@ -41,6 +55,7 @@ class QuizBot:
         self.application.add_handler(CommandHandler("review", self.command_review))
         self.application.add_handler(CommandHandler("addq", self.command_add_question))
         self.application.add_handler(CommandHandler("cq", self.cq_command))
+        self.application.add_handler(CommandHandler("career", self.command_career))
         self.application.add_handler(CommandHandler("restart", self.command_restart))
         self.application.add_handler(CallbackQueryHandler(self.button))
         self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.make_conversation))
@@ -65,6 +80,8 @@ class QuizBot:
             await self.conv_quiz_selected_topic(update, context)
         elif state == ANSWERING_QUESTION:
             await self.conv_quiz_answer(update, context)
+        elif state == CAREER_ANSWER:
+            await self.career_handle_answer(update, context)
         elif state == CHANGING_CORRECT_ANSWER:
             await self.conv_change_question_selected_correct_answer(update, context)
         elif state == CHANGING_TOPIC:
@@ -234,6 +251,13 @@ class QuizBot:
         self.logger.info(f"User ID: {user_id} Role: {role}\nMessage : issued the /cq command.")
         context.user_data.clear()
         await self.conv_change_question_start(update, context)
+
+    async def command_career(self, update: Update, context: CallbackContext):
+        user_id = self.user_manager.user_get_id(update.effective_user.id)
+        role = self.user_manager.user_get_role(user_id)
+        self.logger.info(f"User ID: {user_id} Role: {role}\nMessage : issued the /career command.")
+        context.user_data.clear()
+        await self.career_start(update, context)
 
 
 # Functions for the Quiz conversation
@@ -492,6 +516,59 @@ class QuizBot:
                     f"✅ Correct answers: {correct}/{total}\n"
                     f"👉 Final score: {score:.2f}"),
                 parse_mode="MarkdownV2",
+            )
+        await self.command_restart(update, context)
+
+    async def career_start(self, update: Update, context: CallbackContext):
+        context.user_data["career"] = {
+            "current_index": 0,
+            "scores": {c: 0 for c in ["Realistic", "Investigative", "Artistic", "Social", "Enterprising", "Conventional"]}
+        }
+        await self.career_send_question(update, context)
+
+    async def career_send_question(self, update: Update, context: CallbackContext):
+        data = context.user_data["career"]
+        idx = data["current_index"]
+        if idx >= len(self.career_questions):
+            await self.career_finish(update, context)
+            return
+        q = self.career_questions[idx]
+        options = q["options"]
+        text = f"❓ *Question {idx + 1}/{len(self.career_questions)}*\n\n*{q['text']}* \n\n" + "\n".join([
+            f"{chr(65+i)} - {opt}" for i, opt in enumerate(options)
+        ])
+        message = await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=_escape_markdown(text),
+            parse_mode="MarkdownV2",
+            reply_markup=make_inline_keyboard_for_question_quiz(len(options))
+        )
+        context.user_data["last_message_id"] = message.message_id
+        context.user_data["state"] = CAREER_ANSWER
+
+    async def career_handle_answer(self, update: Update, context: CallbackContext):
+        query = update.callback_query
+        letter = query.data
+        index = ord(letter) - ord('A')
+        categories = ["Realistic", "Investigative", "Artistic", "Social", "Enterprising", "Conventional"]
+        if 0 <= index < len(categories):
+            cat = categories[index]
+            context.user_data["career"]["scores"][cat] += 1
+        context.user_data["career"]["current_index"] += 1
+        await self.career_send_question(update, context)
+
+    async def career_finish(self, update: Update, context: CallbackContext):
+        scores = context.user_data.get("career", {}).get("scores", {})
+        if scores:
+            dominant = max(scores, key=scores.get)
+            description = self.career_descriptions.get(dominant, "")
+            text = _escape_markdown(
+                f"🏁 *Career quiz finished!*\n\nYour dominant category: *{dominant}*\n\n{description}"
+            )
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=text,
+                parse_mode="MarkdownV2"
             )
         await self.command_restart(update, context)
 
