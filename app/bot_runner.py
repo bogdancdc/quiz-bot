@@ -215,7 +215,7 @@ class QuizBot:
         context.user_data["state"] = SELECTING_ACTION
         
     async def command_quiz(self, update: Update, context: CallbackContext):
-        user_id = self.quiz_manager.user_get_id(update.effective_user.id)
+        user_id = self.user_manager.user_get_id(update.effective_user.id)
         role = self.user_manager.user_get_role(user_id)
         self.logger.info(f"User ID: {user_id} Role: {role}\nMessage : issued the /quiz command.")
         context.user_data.clear()
