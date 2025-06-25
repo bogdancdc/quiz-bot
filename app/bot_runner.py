@@ -1069,9 +1069,9 @@ class QuizBot:
         role = self.user_manager.user_get_role(user_id)
         context.user_data["report"] = None
         report_list = self.report_manager.report_list()
-        print(report_list)
+        self.logger.debug(report_list)
         if not report_list:
-            print("No reports available")
+            self.logger.info("No reports available")
             await context.bot.send_message(
                 chat_id=update.effective_chat.id, 
                 text=_escape_markdown("_No reports available._"), 

@@ -65,13 +65,12 @@ class QuizManager:
         return [question.id for question in self.questions_db.values() if question.language.lower() != language.lower()]
     
     def save_dictioanry_to_json(self, path: str):
-        print("OK savedict")
+        self.logger.info("Saving questions dictionary to JSON")
         self.question_loader.save_to_file(path, self.questions_db)
 
     def quiz_delete_question(self, question_id: int):
-        print("OK delete")
+        self.logger.info(f"Deleting question {question_id}")
         self.questions_db.pop(question_id, None)
-        print("OK delete2")
         self.save_dictioanry_to_json(self.question_file)
 
     def quiz_score(self, correct: int, wrong: int):

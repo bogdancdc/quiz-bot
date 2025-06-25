@@ -48,7 +48,7 @@ class ReportLoader:
             }
             report_list.append(report_data)
         try:
-            logging.info(f"Saving {len(report_list)} reports to {path}")
+            self.logger.info(f"Saving {len(report_list)} reports to {path}")
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(report_list, f, ensure_ascii=False, indent=4)
         except FileNotFoundError:

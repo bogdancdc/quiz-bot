@@ -55,7 +55,7 @@ class QuestionsLoader:
             }
             questions_list.append(q_data)
         try:
-            logging.info(f"Saving {len(questions_list)} questions to {path}")
+            self.logger.info(f"Saving {len(questions_list)} questions to {path}")
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(questions_list, f, ensure_ascii=False, indent=4)
         except FileNotFoundError:

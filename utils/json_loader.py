@@ -4,12 +4,16 @@ import json
 import datetime
 from typing import Dict, Any
 
-from quiz_bot.question import Question
+from app.question import Question
+import logging
 
 
 class JSONQuestionsLoader:
 
-# Mwtgod to load the questions from the file
+    def __init__(self, logger: logging.Logger):
+        self.logger = logger
+
+    # Method to load the questions from the file
     def load_from_file(self, path: str) -> Dict[int, Question]:
         with open(path, "r", encoding="utf-8") as f:
             questions_list = json.load(f)
@@ -27,7 +31,9 @@ class JSONQuestionsLoader:
             q = Question(text, options, correct_index, verified, explanation, topic,id,language)
             questions_dict[i] = q
         current_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        print(f"[{current_time}] Loaded {len(questions_dict)} questions from {path}")
+        self.logger.info(
+            f"[{current_time}] Loaded {len(questions_dict)} questions from {path}"
+        )
         return questions_dict
     
 # Method to save the questions to the file
@@ -55,4 +61,6 @@ class JSONQuestionsLoader:
             json.dump(questions_list, f, ensure_ascii=False, indent=4)
         
         current_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        print(f"[{current_time}] Saved {len(questions_dict)} questions to {path}")
+        self.logger.info(
+            f"[{current_time}] Saved {len(questions_dict)} questions to {path}"
+        )
