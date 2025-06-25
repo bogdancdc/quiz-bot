@@ -6,7 +6,7 @@ pytest.importorskip("telegram")
 from telegram import Update, Bot
 from telegram.ext import CallbackContext
 from app.bot_runner import QuizBot
-from app.handlers import _escape_markdown
+from app.handlers import _escape_markdown, SELECTING_ACTION
 from app import main_menu_text
 
 @pytest.fixture
@@ -59,7 +59,7 @@ async def test_command_restart(bot_instance, mock_update, mock_context):
         parse_mode="MarkdownV2",
         reply_markup=MagicMock.ANY
     )
-    assert mock_context.user_data["state"] == "SELECTING_ACTION"
+    assert mock_context.user_data["state"] == SELECTING_ACTION
 
 @pytest.mark.asyncio
 async def test_command_career(bot_instance, mock_update, mock_context):
