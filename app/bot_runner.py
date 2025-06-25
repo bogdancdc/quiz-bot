@@ -22,6 +22,7 @@ from .handlers import(
     extract_list_of_main_operations, extract_list_of_question_changing_operations, extract_list_of_report_operations, extract_list_of_question_operations
 )
 import random, time
+import pytz
 
 
 class QuizBot:
@@ -32,7 +33,13 @@ class QuizBot:
         self.user_manager = UserManager(staff_json_path,logger)
         self.report_manager = ReportManager(reports_json_path,logger)
         self.persistence = PicklePersistence('quiz_bot_data.pkl')
-        self.application = Application.builder().token(self.token).persistence(self.persistence).build()
+        self.application = (
+            Application.builder()
+            .token(self.token)
+            .persistence(self.persistence)
+            .timezone(pytz.UTC)
+            .build()
+        )
         self.logger = logger
         try:
             with open("data/career_questions.json", "r", encoding="utf-8") as f:
