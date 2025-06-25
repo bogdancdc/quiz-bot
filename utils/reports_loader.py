@@ -31,8 +31,8 @@ class ReportLoader:
         except FileNotFoundError:
             self.logger.error(f"File {path} not found")
             return {}
-        
-    
+
+
     def save_to_file(self, path: str, reports_dic: Dict[int, Report]):
         """
         Save questions to a JSON file.
@@ -53,6 +53,3 @@ class ReportLoader:
                 json.dump(report_list, f, ensure_ascii=False, indent=4)
         except FileNotFoundError:
             self.logger.error(f"File {path} not found")
-        
-        
-        
