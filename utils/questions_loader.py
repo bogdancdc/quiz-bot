@@ -35,8 +35,8 @@ class QuestionsLoader:
         except FileNotFoundError:
             self.logger.error(f"File {path} not found")
             return {}
-        
-    
+
+
     def save_to_file(self, path: str, questions_dict: Dict[int, Question]):
         """
         Save questions to a JSON file.
@@ -60,6 +60,3 @@ class QuestionsLoader:
                 json.dump(questions_list, f, ensure_ascii=False, indent=4)
         except FileNotFoundError:
             self.logger.error(f"File {path} not found")
-        
-        
-        
